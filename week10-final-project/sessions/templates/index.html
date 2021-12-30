@@ -1,0 +1,229 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      <div class="col-xl-8">
+        <div id="alert" class="alert alert-danger mt-3" role="alert" style="display: none;"></div>
+
+          {% if start_input %}
+            <h2 id="session-header" class="my-4">Current session</h1>
+          {% else %}
+            <h2 id="session-header" class="my-4">New session</h1>
+          {% endif %}
+
+          <label for="start" class="form-label">Start</label>
+
+          {% if start_input %}
+            <form action="/update-session-start" class="mb-3" method="post">
+              <input id="start" class="form-control" name="start" onchange="this.form.submit()" required type="datetime-local" value="{{ start_input }}">
+              <input type="hidden" name="session_id" value="{{ session_id }}">
+            </form>
+          {% else %}
+            <form action="/start-session" class="mb-5" method="post">
+              <div class="d-grid gap-3">
+                <input id="start" class="form-control" name="start" required type="datetime-local">
+                <input id="start-btn" class="btn btn-primary" type="submit" value="Start">
+              </div>
+            </form>
+          {% endif %}
+
+          {% if start_input %}
+            <label for="end" class="form-label">End</label>
+            <form action="/update-session-end" class="mb-5" method="post">
+              <input type="hidden" name="session_id" value="{{ session_id }}">
+              <input id="end" class="form-control mb-3" name="end" onchange="compareDates()" required type="datetime-local">
+              <label id="session-duration-heading" class="form-label" for="session-duration-text" style="display: none;">Duration</label>
+              <div id="session-duration-text" class="fw-bold mb-3" style="display: none;"></div>
+                <div class="d-grid">
+                  <input id="end-btn" class="btn btn-success" type="submit" value="End session" style="display: none;">
+                </div>
+              </form>
+            {% endif %}
+
+            <h2 class="my-4">Sessions</h1>
+            <form action="/" class="d-flex mb-2" method="post">
+              <input id="date" class="form-control" name="date" onchange="this.form.submit()" required type="date" value="{{ date }}">
+              <input id="previous"class="btn btn-secondary ms-3" onclick="setDate(-1)" type="button" value="&nbsp;<&nbsp;">
+              <input id="today" class="btn btn-secondary mx-2" onclick="setDate(0)" type="button" value="Today">
+              <input id="next"class="btn btn-secondary" onclick="setDate(1)" type="button" value="&nbsp;>&nbsp;">
+            </form>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-start">#</th>
+                  <th scope="col" class="text-center">Start</th>
+                  <th scope="col" class="text-center">End</th>
+                  <th scope="col" class="text-end">Duration</th>
+                  <th></th>
+                </tr>
+              </thead>
+            <tbody>
+
+            {% for session in sessions %}
+              <tr>
+                <th scope="row" class="text-start">{{ loop.index }}</th>
+                <td class="text-center">{{ session.start }}</td>
+                <td class="text-center">{{ session.end }}</td>
+                <td class="text-end">{{ session.duration }}</td>
+                <td class="text-end pe-0">
+                  <form action="/delete-session" method="post">
+                    <input type="hidden" name="id" value="{{ session.id }}">
+                    <button type="submit" class="btn btn-danger">&times;</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+
+            <tr>
+              <td></td>
+              <td></td>
+              <th class="text-center">Total</th>
+              <th class="text-end">{{ total_duration }}</th>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+
+        {% if msg %}
+          {{ msg }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sync start datetime-local every minute
+    syncDatetimeLocal("start");
+
+    // Sync end datetime-local every minute if it's in the DOM
+    let end = document.getElementById("end");
+    if (end) {
+      syncDatetimeLocal("end");
+    }
+
+    // Sync dateime-local input with clock
+    function syncDatetimeLocal(id) {
+      let element = document.getElementById(id);
+
+      if (id === "end" && !element) {
+        return;
+      } else if (id === "start") {
+        let endElement = document.getElementById("end");
+        if (endElement) {
+          return;
+        }
+      }
+
+      element.value = getLocalISOString();
+      if (id === "end") {
+        compareDates();
+      }
+      let now = new Date();
+      let msUntilFullMinute = (60 - now.getSeconds()) * 1000;
+      setTimeout(syncDatetimeLocal, msUntilFullMinute, id);
+    }
+
+    // Set date for sessions table
+    function setDate(delta) {
+      let element = document.getElementById("date");
+
+      if (delta === 0) {
+        date = new Date();
+      } else {
+        date = element.value;
+        date = new Date(date);
+        date.setDate(date.getDate() + delta);
+      }
+
+      let year = date.getFullYear();
+      let month = formatNumber(date.getMonth() + 1);
+      let day = formatNumber(date.getDate());
+      let dateString = year + "-" + month + "-" + day;
+      element.value = dateString;
+      element.form.submit();
+    }
+
+    //Format value having 2 decimals
+    function formatNumber(number) {
+      if (number < 10) {
+        return "0" + number;
+      }
+      return number;
+    }
+
+    // Formats seconds into hours and minutes
+    function getDurationString(s) {
+      let sInM = 60;
+      let mInH = 60;
+      let sInH = sInM * mInH;
+      let h = 0;
+      let m = 0;
+      let remS = Math.round(s);
+      if (remS >= sInH) {
+        h = Math.floor(remS / sInH);
+        remS = remS - h * sInH;
+      }
+      if (remS >= 60) {
+        m = Math.floor(remS / sInM);
+        remS = remS - m * sInM;
+      }
+      if (h > 0) {
+        return h + "h " + m + "m ";
+      }
+      return m + "m ";
+    }
+
+    // Display session duration for a started session
+    function displaySessionDuration(display) {
+      let heading = document.getElementById("session-duration-heading");
+      let text = document.getElementById("session-duration-text");
+      if (display) {
+        let start = new Date(document.getElementById("start").value);
+        let end = new Date(document.getElementById("end").value);
+        let diffMs = end - start;
+        let diffS = diffMs / 1000;
+        text.textContent = getDurationString(diffS);
+        heading.style.display = "block";
+        text.style.display = "block";
+      } else {
+        heading.style.display = "none";
+        text.style.display = "none";
+      }
+    }
+
+    // Compare start and end date and sets alert and duration
+    function compareDates() {
+      let start = new Date(document.getElementById("start").value);
+      let end = new Date(document.getElementById("end").value);
+      let alert = document.getElementById("alert");
+
+      if (end < start) {
+        alert.textContent = "A session always ends after its start. Please adjust one of the datepickers.";
+        alert.style.display = "block";
+        document.getElementById("end-btn").style.display = "none";
+        displaySessionDuration(false);
+      } else {
+        alert.textContent = "";
+        alert.style.display = "none";
+        document.getElementById("end-btn").style.display = "block";
+        displaySessionDuration(true);
+      }
+    }
+
+    // Get string for datetime-local adjusted for timezone at current time
+    function getLocalISOString() {
+      let date = new Date();
+      let tzoffset = date.getTimezoneOffset() * 60000; //offset in milliseconds
+      let dateNow = date.getTime();
+      let dateLocal = new Date(dateNow - tzoffset);
+      let localISOString = dateLocal.toISOString();
+      let trimmedLocalISOString = localISOString.substring(0, localISOString.length - 8);
+      return trimmedLocalISOString;
+    }
+  </script>
+{% endblock %}

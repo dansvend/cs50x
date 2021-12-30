@@ -1,0 +1,78 @@
+sort1 uses: Bubble sort
+
+How do you know?:
+Bubble sorts time complexity: O(n²) — Ω(n).
+The time complexity of Ω(n) occurs when the list is sorted.
+I see that the run times are significantly lower when running this program on
+the already sorted files compared to running it on the random and reversed text files.
+This in combination with comparing the other run times of this program to the run times
+of the other programs I'm sure this is Bubble sort.
+
+/////////////////////////////////////////////////////////////////////////////
+
+sort2 uses: Merge sort
+
+How do you know?:
+Merge sorts time complexity: Θ(n log n).
+This is the most efficient algorithm of the three.
+I can confirm this by comparing the run times for this program with
+the run times for the other programs. This programs run times are
+significantly lower in comparison.
+
+/////////////////////////////////////////////////////////////////////////////
+
+sort3 uses: Selection sort
+
+How do you know?:
+Selection sorts time complexity: Θ(n²).
+This is the least efficient algorithm based on the time complexity.
+But based on my run times I can see that it's more efficient on the
+random and reversed files compared to sort1(Bubble sort).
+But since this program uses significantly more time on the sorted
+files compared to both sort1(Bubble sort) and sort2(Merge sort)
+I know for sure that this program implements selection sort. Bubble sort uses Ω(n)
+on an already sorted file, and this program uses Ω(n²) no matter whether the numbers
+are sorted or not.
+
+/////////////////////////////////////////////////////////////////////////////
+
+Here are my program execution results:
+time ./sort1 random5000.txt     real: 0m0.071s,  user: 0m0.051s, sys: 0m0.008s
+time ./sort1 random10000.txt    real: 0m0.520s,  user: 0m0.230s, sys: 0m0.008s
+time ./sort1 random50000.txt    real: 0m15.966s, user: 0m6.286s, sys: 0m0.056s
+
+time ./sort1 reversed5000.txt   real: 0m0.108s,  user: 0m0.044s, sys: 0m0.012s
+time ./sort1 reversed10000.txt  real: 0m0.399s,  user: 0m0.186s, sys: 0m0.008s
+time ./sort1 reversed50000.txt  real: 0m12.198s, user: 0m4.524s, sys: 0m0.080s
+
+time ./sort1 sorted5000.txt     real: 0m0.011s, user: 0m0.006s, sys: 0m0.006s
+time ./sort1 sorted10000.txt    real: 0m0.081s, user: 0m0.000s, sys: 0m0.021s
+time ./sort1 sorted50000.txt    real: 0m3.534s, user: 0m0.029s, sys: 0m0.070s
+
+/////////////////////////////////////////////////////////////////////////////
+
+time ./sort2 random5000.txt     real: 0m0.012s, user: 0m0.004s, sys: 0m0.008s
+time ./sort2 random10000.txt    real: 0m0.021s, user: 0m0.008s, sys: 0m0.013s
+time ./sort2 random50000.txt    real: 0m3.222s, user: 0m0.035s, sys: 0m0.065s
+
+time ./sort2 reversed5000.txt   real: 0m0.010s, user: 0m0.000s, sys: 0m0.010s
+time ./sort2 reversed10000.txt  real: 0m0.020s, user: 0m0.000s, sys: 0m0.020s
+time ./sort2 reversed50000.txt  real: 0m4.519s, user: 0m0.036s, sys: 0m0.067s
+
+time ./sort2 sorted5000.txt     real: 0m0.013s, user: 0m0.000s, sys: 0m0.013s
+time ./sort2 sorted10000.txt    real: 0m0.018s, user: 0m0.004s, sys: 0m0.015s
+time ./sort2 sorted50000.txt    real: 0m2.891s, user: 0m0.025s, sys: 0m0.067s
+
+/////////////////////////////////////////////////////////////////////////////
+
+time ./sort3 random5000.txt     real: 0m0.034s, user: 0m0.029s, sys: 0m0.004s
+time ./sort3 random10000.txt    real: 0m0.218s, user: 0m0.100s, sys: 0m0.009s
+time ./sort3 random50000.txt    real: 0m7.183s, user: 0m2.384s, sys: 0m0.064s
+
+time ./sort3 reversed5000.txt   real: 0m0.063s, user: 0m0.023s, sys: 0m0.016s
+time ./sort3 reversed10000.txt  real: 0m0.215s, user: 0m0.103s, sys: 0m0.008s
+time ./sort3 reversed50000.txt  real: 0m9.559s, user: 0m2.398s, sys: 0m0.096s
+
+time ./sort3 sorted5000.txt     real: 0m0.097s, user: 0m0.029s, sys: 0m0.008s
+time ./sort3 sorted10000.txt    real: 0m0.486s, user: 0m0.097s, sys: 0m0.020s
+time ./sort3 sorted50000.txt    real: 0m7.207s, user: 0m2.405s, sys: 0m0.088s

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+
+        <script>
+
+            function checkQ1(buttonId) {
+                document.querySelectorAll("#c, #python, #html, #javascript").forEach(element => {element.style.backgroundColor = ""});
+
+                if (buttonId === "html") {
+                    renderResult("q1result", buttonId, true);
+                } else {
+                    renderResult("q1result", buttonId, false);
+
+                }
+            }
+
+            function checkQ2() {
+                let answer = document.querySelector("#q2textInput").value.trim().toLowerCase();
+
+                if (answer === "sql") {
+                    renderResult("q2result", "q2textInput", true);
+                } else {
+                    renderResult("q2result", "q2textInput", false);
+                }
+            }
+
+            function renderResult(pId, inputId, isCorrect) {
+                let color = isCorrect ? "green" : "red";
+                let msg = isCorrect ? "Correct!" : "Incorrect";
+
+                document.querySelector(`#${inputId}`).style.backgroundColor = color;
+                document.querySelector(`#${pId}`).innerHTML = msg;
+            }
+
+        </script>
+
+    </head>
+    <body>
+
+        <div class="jumbotron">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <h3>Which language is not a programming language?</h3>
+                <p id="q1result"></p>
+                <button id="c" type="button" onclick="checkQ1('c')">C</button>
+                <button id="python" type="button" onclick="checkQ1('python')">Python</button>
+                <button id="html" type="button" onclick="checkQ1('html')">HTML</button>
+                <button id="javascript" type="button" onclick="checkQ1('javascript')">JavaScript</button>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <h3>Which language is used to query databases?</h3>
+                <p id="q2result"></p>
+                <input id="q2textInput" type="text">
+                <button type="button" onclick="checkQ2()">Check Answer</button>
+            </div>
+
+        </div>
+    </body>
+</html>
